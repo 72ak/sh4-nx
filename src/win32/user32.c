@@ -210,12 +210,7 @@ WINAPI(CoUninitialize, "CoUninitialize", 0) { return 0; }
 WINAPI(CoFreeUnusedLibraries, "CoFreeUnusedLibraries", 0) { return 0; }
 WINAPI(CoTaskMemAlloc, "CoTaskMemAlloc", 1) { return galloc(ARG(0)); }
 WINAPI(CoTaskMemFree, "CoTaskMemFree", 1) { gfree(ARG(0)); return 0; }
-WINAPI(CoCreateInstance, "CoCreateInstance", 5) {
-    uint32_t c = ARG(0);
-    rt_log("CoCreateInstance(%08X-%04X): no such class", MEM32(c), *(uint16_t *)GPTR(c + 4));
-    MEM32(ARG(4)) = 0;
-    return 0x80040154u;  /* REGDB_E_CLASSNOTREG */
-}
+/* CoCreateInstance: dshow.c */
 /* BSTR: a length prefix, then the UTF-16 string. */
 WINAPI(SysAllocString, "OLEAUT32#2", 1) {
     uint32_t n = 0;

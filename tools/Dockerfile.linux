@@ -5,5 +5,5 @@
 FROM debian:bookworm
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential cmake ninja-build libsdl2-dev xvfb mesa-utils libgl1-mesa-dri libegl1 libgl1 \
-    python3 gdb && rm -rf /var/lib/apt/lists/*
+    python3 gdb xauth && rm -rf /var/lib/apt/lists/*
 ENV LIBGL_ALWAYS_SOFTWARE=1 MESA_GL_VERSION_OVERRIDE=4.3 MESA_GLSL_VERSION_OVERRIDE=430

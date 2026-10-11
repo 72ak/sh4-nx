@@ -8,8 +8,10 @@ It is not an emulator. `SILENT HILL 4.exe` is statically recompiled to C ahead o
 cutarev) and the C is compiled for the Switch's ARM64 CPU. The Windows layer the game expects (Direct3D 8,
 DirectSound, DirectInput, kernel32...) is cutarev's reimplementation on SDL2 and OpenGL, adapted here for SH4.
 
-**Status: first build, untested on hardware.** Expect it to crash or show nothing; `sh4-crash.log` and `sh4.log`
-(with `log=1` in `sh4.ini`) next to the NRO say where.
+**Status: boots to the title screen and into the game on the Linux build** (headless, software OpenGL): Konami
+logo, title menu, New Game, difficulty select, the intro narration and the first view of Room 302. Not yet tested
+on a Switch. If it crashes there, `sh4-crash.log` and `sh4.log` (with `log=1` in `sh4.ini`) next to the NRO say
+where.
 
 ## What changed from sh3-nx
 
@@ -22,7 +24,12 @@ DirectSound, DirectInput, kernel32...) is cutarev's reimplementation on SDL2 and
 - Registry key `SOFTWARE\Konami\SILENT HILL 4\1.00.000` opens but holds no values (the game uses its defaults).
 - `CheckSpec.dll` and `drc.dll` are loaded through `LoadLibraryA` and their functions through
   `GetProcAddress`; both are left unbridged and the game skips them (it checks for NULL).
-- The FMVs (`movie/*.pac`, CRI Sofdec through DirectShow) are skipped: `CoCreateInstance` fails, as in sh3-nx.
+- `src/win32/dshow.c`: the FMVs (`movie/*.pac`, MPEG-1 through DirectShow) are skipped by a filter graph that
+  plays nothing. SH4 never checks the HRESULTs of its graph setup, so the objects have to exist: this graph hands
+  out the pins the game looks for, accepts every connection and reports EC_COMPLETE right after Run. Real
+  playback would feed the game's own renderer filter from here.
+- `tools/Dockerfile.linux`, `build-linux.sh`, `run-linux.sh`: a Linux build run headless in a container (Xvfb,
+  Mesa llvmpipe), with scripted keys and frame dumps, for debugging without a Switch.
 - The D3DX math inside the exe has 3DNow! and SSE2 paths the lifter leaves as TODO stubs; the runtime reports a
   CPU without them, so the plain x87 paths run.
 
