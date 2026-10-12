@@ -8,6 +8,8 @@ So I started using Fable (goodbye weekly limits for this bs) and had to switch s
 but on the whole it was basically a one prompt
 kinda scary
 
+![larptok](v24044gl0000db62apfog65tfjpoa2dg.MP4)
+
 ## AI Slop:
 A native Nintendo Switch port of the PC version of **Silent Hill 4: The Room** (GOG build), made the same way as
 [sh2-nx](https://github.com/cutarev/sh2-nx) and [sh3-nx](https://github.com/cutarev/sh3-nx) by cutarev, whose
