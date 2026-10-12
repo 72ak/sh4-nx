@@ -1,5 +1,12 @@
-# Silent Hill 4: The Room — Nintendo Switch port (work in progress)
+# Silent Hill 4: The Room on Nintendo Switch
 
+Akash: I've been wanting to play sh4 again for a hot minute and my ps3 is loud and cumbersome so I wanted to put it on the switch.
+Issue is ps2 emulation sucks on the switch and I wanted near native performance that I'd get on my actual ps2.
+I've been seeing all these recomps and decomps and saw the sh3 and sh2 ports all using opus 5.5
+So I started using Fable (goodbye weekly limits for this bs) and had to switch so things are a little funky
+but on the whole it was basically a one prompt
+
+### AI Slop:
 A native Nintendo Switch port of the PC version of **Silent Hill 4: The Room** (GOG build), made the same way as
 [sh2-nx](https://github.com/cutarev/sh2-nx) and [sh3-nx](https://github.com/cutarev/sh3-nx) by cutarev, whose
 runtime this port starts from.
