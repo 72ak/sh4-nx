@@ -14,7 +14,7 @@ from capstone.x86_const import X86_OP_IMM, X86_OP_MEM
 
 from pe2xbe import parse_pe
 
-EXE, XREFS, OUT = 'build/sh4a.exe', 'build/disasm/xrefs.json', 'build/seeds.json'  # tools/realign_pe.py's output
+EXE, XREFS, OUT = 'build/sh4_ws.exe', 'build/disasm/xrefs.json', 'build/seeds.json'  # tools/patch_exe.py's output
 d = open(EXE, 'rb').read()
 PE = parse_pe(d)
 BASE = PE['base']

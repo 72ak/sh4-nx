@@ -12,14 +12,15 @@ mkdir -p "$B"
 cd "$ROOT"
 if [ "$1" != --recomp-only ]; then
 "$PY" tools/realign_pe.py game/sh4.exe "$B/sh4a.exe"  # sections at file offset == RVA
-"$PY" tools/pe2xbe.py "$B/sh4a.exe" "$B/sh4.xbe" --imports "$B/imports.json"
+"$PY" tools/patch_exe.py "$B/sh4a.exe" "$B/sh4_ws.exe"  # widescreen constants
+"$PY" tools/pe2xbe.py "$B/sh4_ws.exe" "$B/sh4.xbe" --imports "$B/imports.json"
 cd "$X"
 "$PY" -m tools.xbe_parser "$B/sh4.xbe" --json "$B/sh4_analysis.json" --quiet
 # Pass 1 finds the code; its immediates and data pointers seed the functions only data refers to.
 "$PY" -m tools.disasm "$B/sh4.xbe" --text-only -o "$B/disasm" --force > "$B/disasm.log" 2>&1
 cd "$ROOT" && "$PY" tools/seeds.py && cd "$X"
 "$PY" -m tools.disasm "$B/sh4.xbe" --text-only -o "$B/disasm" --force --seed-functions "$B/seeds.json" > "$B/disasm.log" 2>&1
-"$PY" "$ROOT/tools/fix_functions.py" "$B/sh4a.exe" "$B/disasm/functions.json"
+"$PY" "$ROOT/tools/fix_functions.py" "$B/sh4_ws.exe" "$B/disasm/functions.json"
 "$PY" -m tools.func_id "$B/sh4.xbe" --functions "$B/disasm/functions.json" --strings "$B/disasm/strings.json" \
     --xrefs "$B/disasm/xrefs.json" -o "$B/func_id" > "$B/func_id.log" 2>&1
 "$PY" -m tools.abi_analysis "$B/sh4.xbe" --disasm-dir "$B/disasm" --func-id-dir "$B/func_id" --output-dir "$B/abi" > "$B/abi.log" 2>&1

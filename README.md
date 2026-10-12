@@ -8,16 +8,24 @@ It is not an emulator. `SILENT HILL 4.exe` is statically recompiled to C ahead o
 cutarev) and the C is compiled for the Switch's ARM64 CPU. The Windows layer the game expects (Direct3D 8,
 DirectSound, DirectInput, kernel32...) is cutarev's reimplementation on SDL2 and OpenGL, adapted here for SH4.
 
-**Status: boots to the title screen and into the game on the Linux build** (headless, software OpenGL): Konami
-logo, title menu, New Game, difficulty select, the intro narration and the first view of Room 302. Not yet tested
-on a Switch. If it crashes there, `sh4-crash.log` and `sh4.log` (with `log=1` in `sh4.ini`) next to the NRO say
-where.
+**Status: runs on a Switch, in widescreen.** The Linux build is also tested, scripted from the title screen into
+Room 302. The FMVs are skipped for now. If it crashes, `sh4-crash.log` and `sh4.log` (with `log=1`
+in `sh4.ini`) next to the NRO say where.
+
+You need your own copy of the game: the repository holds no game files, and the NRO in the releases runs only
+with the GOG version's `SILENT HILL 4.exe` and data next to it.
 
 ## What changed from sh3-nx
 
 - `tools/realign_pe.py`: the GOG exe is 0x200-aligned; the pipeline wants sections at file offset == RVA.
 - `src/game/sh4.c`: the static CRT's two memcpy copies (0x57FE90, 0x576BC0) replaced by hand, as in sh3-nx.
-  No widescreen patches yet: the game runs unmodified, 4:3.
+- Widescreen, ported from ThirteenAG's [SilentHill4.WidescreenFix](https://github.com/ThirteenAG/WidescreenFixesPack):
+  the game renders at the screen's resolution (`resolution=` in `sh4.ini`, 1280x720 by default) whatever its own
+  Resolution option says; the camera widens (hor+); menus, text and the HUD keep a centered 4:3 area; full-screen
+  fades and filters stretch across the screen; and the cutscene borders and a few screen-space effects drawn for
+  4:3 are left out. Most of it is in `src/game/sh4.c`, chosen by each call's return address;
+  `tools/patch_exe.py` patches the few constants inside functions before recompiling (the SD card keeps the
+  original exe). At `resolution=640x480` or any other 4:3 mode everything is the game's own.
 - Bridges SH4 imports that SH3 did not: `GetVersion`, `RtlUnwind`, `MsgWaitForMultipleObjects`,
   `GetQueueStatus`, `PostThreadMessageA`, `GetDesktopWindow`, `DestroyWindow`, `UnregisterClassA`,
   `GetWindowPlacement`, `GetClientRect`, `RegSetValueExA`, `RegDeleteValueA`, `ImmAssociateContextEx`.
@@ -49,8 +57,15 @@ where.
   sh4.ini          (optional: resolution=WxH, cores=1, log=1, trace=1)
 ```
 
-`tools/make_sd.py <sd root> --game "A:/Games/Silent Hill 4"` lays this out. Launch from the homebrew menu in
-title takeover mode (hold R while starting an installed game), not from the album.
+`tools/make_sd.py <sd root> --game "C:/GOG Games/Silent Hill 4"` lays this out. Launch from the homebrew menu
+in title takeover mode (hold R while starting an installed game), not from the album.
+
+### On the home screen
+
+Make a forwarder with TooTallNate's [switch-nsp-forwarder](https://github.com/TooTallNate/switch-nsp-forwarder):
+run it from the homebrew menu, pick `sh4-nx`, and install the NSP it writes with DBI or another installer (to
+emuMMC, if you run CFW from emuMMC). The forwarder takes the NRO's icon when it's made, so make it again after
+replacing the NRO with one that has a different icon.
 
 ## Building
 
@@ -61,8 +76,13 @@ ROOT=$PWD sh tools/regen.sh          # exe -> C (about 6 minutes)
 ROOT=$PWD sh tools/build-switch.sh   # C -> build/switch/sh4-nx.nro, in devkitPro's container (docker or podman)
 ```
 
+On Windows (Git Bash) use `ROOT=$(pwd -W)`: the tools run under Windows Python, which needs `C:/...` paths.
+A 256x256 `icon.jpg` at the top of the repository becomes the NRO's icon (the release uses GOG's cover art);
+without one the NRO has none.
+
 ## Credits
 
 - **cutarev**: sh2-nx and sh3-nx, the runtime and tooling this port is built from, and the xboxrecomp patches.
 - **sp00nznet**: xboxrecomp, the x86 to C lifter.
+- **ThirteenAG**: SilentHill4.WidescreenFix, which the widescreen support is ported from.
 - **devkitPro**, **switchbrew**, SDL2, Mesa.

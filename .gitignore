@@ -1,8 +1,9 @@
 # Game files and everything derived from them stay out of the repository.
-game/
-sd/
-build/
+/game/
+/sd/
+/build/
 src/recomp/gen/
 .venv/
 __pycache__/
 *.pyc
+/icon.jpg

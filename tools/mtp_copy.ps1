@@ -65,9 +65,12 @@ function Copy-OneFile([System.IO.FileInfo]$file, [string]$destPath) {
     if (-not $item) { throw "cannot open $($file.FullName)" }
     # 4 no progress UI, 16 yes to all (overwrite), 512 no directory confirm, 1024 no UI on error
     $dst.CopyHere($item, 4 + 16 + 512 + 1024)
+    # Enumerating the device while a big file is in flight stalls the transfer (the responder answers one
+    # request at a time), so the bigger the file, the rarer the look: about once per 10 MB, 0.8 s to 30 s.
+    $pollMs = [math]::Max(800, [math]::Min(30000, [int]($file.Length / 10MB * 1000)))
     $deadline = (Get-Date).AddMinutes($FileTimeoutMin)
     while ((Get-Date) -lt $deadline) {
-        Start-Sleep -Milliseconds 800
+        Start-Sleep -Milliseconds $pollMs
         try { $dst = Get-MtpFolder $destPath; $have = Get-RemoteSize $dst $file.Name } catch { continue }
         if ($have -eq $file.Length) { return 'copied' }
     }
